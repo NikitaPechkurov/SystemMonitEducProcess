@@ -1,17 +1,19 @@
-package Model;
+package Connection;
 
-import Connection.DBConnect;
+import Model.Message;
+import Model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.util.converter.BigDecimalStringConverter;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DAOMessage {
 
     //поиск сообщения по введённому. Вернет экземпляр
-    public static ObservableList<Message> searchMessage (String messageSelect) throws SQLException, ClassNotFoundException {
+    public static ObservableList<Message> searchMessage (String messageSelect) throws SQLException,
+            ClassNotFoundException, IOException {
         //Declare a SELECT statement
         String selectStmt = "SELECT * FROM " + DBConnect.DBName + " WHERE "+ DBConnect.nameColMessage.MESSAGE +" LIKE '" + messageSelect + "';";//было = вместо like
         //Execute SELECT statement
@@ -35,7 +37,7 @@ public class DAOMessage {
     }
 
     //ищет экземпляр сообщения (для картинок) по типу(image) и номеру слайда
-    public static Message searchImageMessage (String id_slide) throws SQLException, ClassNotFoundException {
+    public static Message searchImageMessage (String id_slide) throws SQLException, ClassNotFoundException, IOException {
         //Declare a SELECT statement
         String selectStmt = "SELECT * FROM " + DBConnect.nameColTables.MESSAGES + " WHERE "
                 + DBConnect.nameColMessage.TYPE+" = 'image' AND " + DBConnect.nameColMessage.ID_SLIDE + " = '"+ id_slide +"';";
@@ -58,7 +60,7 @@ public class DAOMessage {
     }
 
     //сформировать экземпляр сообщения из вернувшегося ответа от БД
-    private static Message getMessageFromResultSet(ResultSet rs) throws SQLException {
+    private static Message getMessageFromResultSet(ResultSet rs) throws SQLException, IOException {
         Message mess = new Message("aaaa", "bbbb", "ll11","cccc");
         mess.setId(rs.getString(DBConnect.nameColMessage.ID));
         mess.setId_user(rs.getString(DBConnect.nameColMessage.ID_USER));
@@ -69,7 +71,8 @@ public class DAOMessage {
     }
 
     //получить весь список сообщений (вопросов)
-    public static String searchListMessage(String id_user, String type) throws SQLException, ClassNotFoundException {
+    public static String searchListMessage(String id_user, String type) throws SQLException,
+            ClassNotFoundException, IOException {
         //Declare a SELECT statement
         String selectStmt = "SELECT * FROM " + DBConnect.nameColTables.MESSAGES + " WHERE "+ DBConnect.nameColMessage.ID_USER +
                 " = '" + id_user + "' AND Type = '"+type+"';";
@@ -140,7 +143,7 @@ public class DAOMessage {
     }
 
     //поиск изображения текущего слайда с получением значения из БД type = currentSlide
-    public static Message searchCurrentMessageForImage() throws SQLException, ClassNotFoundException {
+    public static Message searchCurrentMessageForImage() throws SQLException, ClassNotFoundException, IOException {
         String currentNumberOfSlideStmt = "SELECT TOP 1 " + DBConnect.nameColMessage.ID_SLIDE + " FROM " +
                 DBConnect.nameColTables.MESSAGES + " WHERE " + DBConnect.nameColMessage.TYPE + " = 'currentSlide';";
         String slideNumber = "";

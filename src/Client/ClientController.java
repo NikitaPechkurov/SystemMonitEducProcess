@@ -1,8 +1,10 @@
-package sample;
+package Client;
 
-import Model.DAOUser;
+import Connection.DAOUser;
+import Model.ImageVision;
 import Model.Message;
 import Model.User;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -11,6 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
@@ -37,7 +40,7 @@ public class ClientController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            student = DAOUser.searchUser("Александр").get(0);
+            student = DAOUser.searchUser("Александр").get(0);//будет исправлено!
             clientSocket = new ClientSocket();
         }catch(SQLException e){
             System.out.println(e);
@@ -46,16 +49,16 @@ public class ClientController implements Initializable {
         }
     }
 
-    public void connect(ActionEvent actionEvent) throws InterruptedException{
+    public void connect(ActionEvent actionEvent) throws InterruptedException, IOException{
         connectButton.setDisable(true);
-        Message current = getSlideMessage(student.getId());
-        if (current.getMessage() == null) {
-            imageViewClient.setImage(new Image("https://i.imgur.com/L0iDcra.png"));
-        }
-        else {
-            System.out.println("Картинка установлена в ImageViewClient!" + current.getMessage());
-            imageViewClient.setImage(new Image(current.getMessage()));
-        }
+        clientSocket.setMessage(new Message(student.getId(),"","","getSlide"));
+        System.out.println("Отправлено сообщение с просьбой передать текущий слайд");
+        clientSocket.start();
+        Thread.sleep(9000);
+        Message t = clientSocket.getMessage();
+        ImageVision imageOneClient = t.getImageVision();//полученная картинка первого слайда
+        imageViewClient.setImage(SwingFXUtils.toFXImage(imageOneClient.getImage(),null));
+        //System.out.println("Картинка установлена в ImageViewClient! " + imageOneClient.impl_getUrl());
     }
 
     public void OKCommentClient(ActionEvent actionEvent) throws InterruptedException{
@@ -77,8 +80,8 @@ public class ClientController implements Initializable {
     public void onNextImage(ActionEvent actionEvent) {
         //N++;
         try {
-            Message current = getSlideMessage(student.getId());
-            imageViewClient.setImage(new Image(current.getMessage()));
+            //Message current = getSlideMessage(student.getId());
+            //imageViewClient.setImage(new Image(current.getMessage()));
             System.out.println("Изображение получено!");
         }catch (Exception e){
             System.out.println("Следующей картинки, видимо, не пришло или администратор завершил встречу: "+e);
@@ -95,15 +98,15 @@ public class ClientController implements Initializable {
     }
 
     //***ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ***
-    private Message getSlideMessage(String id_user) throws InterruptedException{
+    /*private Message getSlideMessage(String id_user) throws InterruptedException{
         clientSocket.setMessage(new Message(id_user,"","","getSlide"));
-        Thread.sleep(12000);
         System.out.println("Отправлено сообщение с просьбой передать текущий слайд");
+        Thread.sleep(12000);
         Message t = clientSocket.getMessage();
         return t;
-    }
+    }*/
 
-    private void sendRecord(String username, String nn, String mes, String type) throws InterruptedException{
+    private void sendRecord(String username, String nn, String mes, String type) throws InterruptedException, IOException{
         clientSocket.setMessage(new Message(username,nn,mes,type));
         Thread.sleep(10);
     }

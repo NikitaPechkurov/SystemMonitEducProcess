@@ -1,8 +1,7 @@
-package sample;
+package Client;
 
 import Model.Message;
-import javafx.collections.ObservableList;
-import javafx.scene.image.Image;
+import javafx.embed.swing.SwingFXUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -14,9 +13,7 @@ public class ClientSocket extends Thread{
     private DataInputStream ois;
     private ObjectOutputStream objos;
     private ObjectInputStream oin;
-    private Message message;
-    //private Image image = new Image("https://i.imgur.com/L0iDcra.png");
-    //private Image image;
+    private Message message;//контейнер для Message уже на стороне клиента
     private String questions;
     private String answers;
 
@@ -33,12 +30,9 @@ public class ClientSocket extends Thread{
 
     @Override
     public void run() {
-        try  // создаём объект для записи строк в созданный скокет, для
-                // чтения строк из сокета
-                // в try-with-resources стиле
+        try  // создаём объект для записи сообщений в созданный скокет, для
+                // чтения сообщений из сокета
                  {
-            // создаём объект для записи строк в созданный скокет, для
-            // чтения строк из сокета
             oos = new DataOutputStream(socket.getOutputStream());
             ois = new DataInputStream(socket.getInputStream());
                      objos = new ObjectOutputStream(oos);
@@ -46,13 +40,11 @@ public class ClientSocket extends Thread{
             System.out.println("Client DOS & DIS initialized");
 
             while (!socket.isClosed()) {
-                //ЗАПИСАЛИ СООБЩЕНИЕ
-                objos.writeObject(message);
+                objos.writeObject(message);//СНАЧАЛА ЗАПИСЬ
                 objos.flush();
-
                 System.out.println("ClientSocket: сообщение передано на сервер.");
                 System.out.println("reading...");
-
+                //ПОТОМ ЧТЕНИЕ!
                 //клиент-сокет может попросить загрузить вопрос, комментарий; послать ему картинку, первую картинку; и обновить клиентский чат
                 if (message.getType().equals("question") || message.getType().equals("comment")) {
                     listening();
@@ -62,16 +54,17 @@ public class ClientSocket extends Thread{
                     answers = (String) oin.readObject();
                     System.out.println("С сервера пришло " + answers.length() + " символов.");
                 }
+
             }
 
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            System.out.println("IOEx clientSocket.run()");
             } catch (InterruptedException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            System.out.println("Interrupted clientSocket.run()");
         }catch (ClassNotFoundException e){
-            System.out.println("ClassNotFound getImage: "+e);
+            System.out.println("ClassNotFoundEx clientSocket.run(): "+e);
         }
     }
 
@@ -83,8 +76,9 @@ public class ClientSocket extends Thread{
 
     private void gettingImage() throws IOException,ClassNotFoundException,InterruptedException{
         message = (Message) oin.readObject();
+        System.out.println("Текст полученного Message: "+message.getMessage());
         System.out.println("Картинка сформирована!");
-        System.out.println("Сервер послал картинку слайда::: " + message.getMessage());
+        System.out.println("Сервер послал картинку слайда::: " + SwingFXUtils.toFXImage(message.getImageVision().getImage(),null).impl_getUrl());
     }
     //***
 
@@ -93,10 +87,6 @@ public class ClientSocket extends Thread{
     public void setMessage(Message mes){
         this.message = mes;
     }
-
-    /*public Image getImage(){//возвращать этим методом картинку в контроллер
-        return image;
-    }*/
 
     public Message getMessage(){
         return message;

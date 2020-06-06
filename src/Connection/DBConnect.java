@@ -5,6 +5,7 @@ import com.sun.rowset.CachedRowSetImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.io.IOException;
 import java.sql.*;
 
 public class DBConnect {
@@ -126,7 +127,7 @@ public class DBConnect {
 
     //данный метод заполняет массив ответов с помощью переданного sql-запроса
     //переделать этот метод под сообщения в БД (кто отправил еще поле)
-    public ObservableList<Message> createMessages(String query) throws SQLException {
+    public ObservableList<Message> createMessages(String query) throws SQLException, IOException {
 
         ObservableList<Message> messages = FXCollections.observableArrayList();
         Connection dbConnection = null;

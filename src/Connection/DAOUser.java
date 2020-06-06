@@ -1,6 +1,7 @@
-package Model;
+package Connection;
 
 import Connection.DBConnect;
+import Model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 

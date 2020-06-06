@@ -1,8 +1,10 @@
 package Model;
 
-import javafx.beans.property.SimpleStringProperty;
 
+import javax.imageio.ImageIO;
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.URL;
 
 public class Message implements Serializable{
 
@@ -11,12 +13,14 @@ public class Message implements Serializable{
     String id_slide;
     String message;
     String type;
+    ImageVision image;
 
-    public Message(String id_user, String id_slide, String message, String type) {
+    public Message(String id_user, String id_slide, String message, String type) throws IOException{
         this.id_user = id_user;
         this.id_slide = id_slide;
         this.message = message;
         this.type = type;
+        image = new ImageVision(ImageIO.read(new URL("https://i.imgur.com/L0iDcra.png")));
     }
 
     public String getId() {
@@ -44,6 +48,10 @@ public class Message implements Serializable{
     }
 
     public void setType(String type) { this.type = type; }
+
+    public ImageVision getImageVision(){return image;}
+
+    public void setImageVision(ImageVision image){this.image = image;}
 
     public String record(){ return "'"+id_user+"','"+id_slide+"','"+message+"','"+ type+"'"; }
 

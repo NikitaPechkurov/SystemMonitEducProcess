@@ -1,10 +1,8 @@
-package sample;
+package Server;
 
-import Connection.DBConnect;
-import Model.DAOMessage;
+import Connection.DAOMessage;
 import Model.Message;
-import javafx.collections.ObservableList;
-import javafx.scene.image.Image;
+import javafx.embed.swing.SwingFXUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -22,6 +20,7 @@ public class MonoThreadClientHandler extends Thread {
     public MonoThreadClientHandler(Socket client, MultiThreadServer server) {
         clientDialog = client;
         this.server = server;
+        this.start();
     }
 
     @Override
@@ -32,25 +31,28 @@ public class MonoThreadClientHandler extends Thread {
 
             // канал записи в сокет следует инициализировать сначала канал чтения для избежания блокировки выполнения программы на ожидании заголовка в сокете
             out = new DataOutputStream(clientDialog.getOutputStream());
-
             // канал чтения из сокета
             in = new DataInputStream(clientDialog.getInputStream());
             System.out.println("DataInputStream created");
+            System.out.println("DataOutputStream created");
 
-            System.out.println("DataOutputStream  created");
             // начинаем диалог с подключенным клиентом в цикле, пока сокет не
             // закрыт клиентом
             while (!clientDialog.isClosed()) {
                 System.out.println("Server reading from channel");
                 oin = new ObjectInputStream(in);
                 outputStream = new ObjectOutputStream(out);
+                System.out.println("Object -input -output Stream created");
                 // серверная нить ждёт в канале чтения (inputstream) получения
                 // данных клиента после получения данных считывает их
                 try {
+                    //СНАЧАЛА ПРОЧИТАЛИ
                     Message entry_message = (Message) oin.readObject();
-                    // и выводит в консоль
+                    // и выводим в консоль
                     System.out.println("READ from clientDialog message - " + entry_message.record());
                     Thread.sleep(5000);
+
+                    //ПОТОМ ЗАПИСАЛИ!
                     if (entry_message.getType().equals("question") ||
                             entry_message.getType().equals("comment")) {
                         insertingMessageToDB(entry_message);
@@ -63,10 +65,11 @@ public class MonoThreadClientHandler extends Thread {
                     }*/
 
                     else if (entry_message.getType().equals("getSlide")) {//получение текущей картинки слайда при подключении клиента
-                        outputStream.writeObject(server.getMessage());
-                        System.out.println("Возвращаем такую картинку: "+server.getMessage().getMessage());
+                        Message toClient = server.getMessage();
+                        outputStream.writeObject(toClient);
+                        System.out.println("Возвращаем картинку...");
                         outputStream.flush();
-                        System.out.println("Message с картинкой слайда вернули на clientSocket!");
+                        System.out.println("Message с такой картинкой слайда вернули на clientSocket!: "+ SwingFXUtils.toFXImage(toClient.getImageVision().getImage(),null).impl_getUrl());
                     } else if (entry_message.getType().equals("updateClientChat")) {
                         String answers = DAOMessage.searchListMessage("1", "answer");
                         answers += DAOMessage.searchListMessage("1", "comment");
@@ -92,6 +95,7 @@ public class MonoThreadClientHandler extends Thread {
                 // освобождаем буфер сетевых сообщений
                 out.flush();
                 oin.close();//закрываем именно ObjectInputStream
+                outputStream.close();
                 // возвращаемся в началло для считывания нового сообщения
             }
 
