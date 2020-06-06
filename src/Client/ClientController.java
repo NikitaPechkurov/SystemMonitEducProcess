@@ -34,19 +34,14 @@ public class ClientController implements Initializable {
 
     Image img;//текущий слайд - картинка. Слайдов 7. БД содержит ссылки на картинки в виде сообщений для клиента,
     //идентификация по типу сообщения и номеру слайда
+    Message T;//текущее сообщение
 
     ClientSocket clientSocket;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try {
-            student = DAOUser.searchUser("Александр").get(0);//будет исправлено!
-            clientSocket = new ClientSocket();
-        }catch(SQLException e){
-            System.out.println(e);
-        }catch (ClassNotFoundException ec){
-            System.out.println(ec);
-        }
+        student = new User("1","Студент","student","student");
+        clientSocket = new ClientSocket();
     }
 
     public void connect(ActionEvent actionEvent) throws InterruptedException, IOException{
@@ -55,43 +50,46 @@ public class ClientController implements Initializable {
         System.out.println("Отправлено сообщение с просьбой передать текущий слайд");
         clientSocket.start();
         Thread.sleep(9000);
-        Message t = clientSocket.getMessage();
-        ImageVision imageOneClient = t.getImageVision();//полученная картинка первого слайда
+        T = clientSocket.getMessage();
+        ImageVision imageOneClient = T.getImageVision();//полученная картинка первого слайда
         imageViewClient.setImage(SwingFXUtils.toFXImage(imageOneClient.getImage(),null));
         //System.out.println("Картинка установлена в ImageViewClient! " + imageOneClient.impl_getUrl());
     }
 
-    public void OKCommentClient(ActionEvent actionEvent) throws InterruptedException{
-        String comment = commentSide.getText();
-        commentSide.setText("");
-        System.out.println("Comment client: "+comment);
-        //sendRecord(student.getId(),String.valueOf(N),comment,"comment");
-        //TextAreaClient.appendText("Sl:"+N+". "+student.getUsername()+": "+comment+", comment;\r\n");
-    }
-
-    public void OKQuestion(ActionEvent actionEvent) throws InterruptedException{
-        String message = questionSide.getText();
-        questionSide.setText("");
-        System.out.println("Вопрос: "+message);
-        //sendRecord(student.getId(),String.valueOf(N),message,"question");
-        //TextAreaClient.appendText("Sl:"+N+". "+student.getUsername()+": "+message+", question;\r\n");
-    }
-
     public void onNextImage(ActionEvent actionEvent) {
-        //N++;
         try {
-            //Message current = getSlideMessage(student.getId());
-            //imageViewClient.setImage(new Image(current.getMessage()));
+            clientSocket.setMessage(new Message(student.getId(),"","","getSlide"));
+            System.out.println("Отправлено сообщение с просьбой передать текущий слайд");
+            Thread.sleep(9000);
+            T = clientSocket.getMessage();
+            ImageVision imageOneClient = T.getImageVision();//полученная картинка первого слайда
+            imageViewClient.setImage(SwingFXUtils.toFXImage(imageOneClient.getImage(),null));
             System.out.println("Изображение получено!");
         }catch (Exception e){
-            System.out.println("Следующей картинки, видимо, не пришло или администратор завершил встречу: "+e);
+            System.out.println("Нужной картинки, видимо, не пришло или сервер неактивен!: "+e);
         }
     }
 
-    public void updateClientChat(ActionEvent actionEvent) throws InterruptedException{
+    public void OKCommentClient(ActionEvent actionEvent) throws InterruptedException, IOException{
+        String comment = commentSide.getText();
+        commentSide.setText("");
+        System.out.println("Comment client: "+comment);
+        sendRecord(student.getId(),T.getId_slide(),comment,"commentClient");
+        TextAreaClient.appendText(student.getUsername()+": "+comment+", comment;\r\n");
+    }
+
+    public void OKQuestion(ActionEvent actionEvent) throws InterruptedException, IOException{
+        String question = questionSide.getText();
+        questionSide.setText("");
+        System.out.println("Вопрос client: "+question);
+        sendRecord(student.getId(),T.getId_slide(),question,"question");
+        TextAreaClient.appendText(student.getUsername()+": "+question+", question;\r\n");
+    }
+
+    public void updateClientChat(ActionEvent actionEvent) throws InterruptedException, IOException{
         TextAreaClient.setText("");
-        //clientSocket.setMessage(new Message(student.getId(),String.valueOf(N),"","updateClientChat"));
-        Thread.sleep(12000);
+        clientSocket.setMessage(new Message(student.getId(),T.getId_slide(),"","updateClientChat"));
+        Thread.sleep(9000);
         answers = clientSocket.getAnswers();
         TextAreaClient.appendText(answers);
         System.out.println("Ответы обновлены!");

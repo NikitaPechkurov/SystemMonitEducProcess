@@ -2,8 +2,7 @@ package Server;
 
 import Model.Message;
 
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -16,6 +15,8 @@ public class MultiThreadServer extends Thread {
     static ArrayList<Thread> connections = new ArrayList<>(10);
     private ServerSocket server;//тот самый сервер
     private Message message;
+    private String TextForServer;
+    private String TextForClient;
 
     public MultiThreadServer() throws IOException{
         try {
@@ -50,7 +51,7 @@ public class MultiThreadServer extends Thread {
             }
 
             // закрытие пула нитей после завершения работы всех нитей
-            for (int i=0;i<connections.size();i++){// = executeIt.shutdown();
+            for (int i = 0;i < connections.size(); i++){// = executeIt.shutdown();
                 connections.get(i).interrupt();
             }
             System.out.println("All connections are closed!");
@@ -70,5 +71,21 @@ public class MultiThreadServer extends Thread {
 
     public Thread getConnection(int n){
         return connections.get(n);
+    }
+
+    public void addTextForServer(String text){
+        TextForServer += text;
+    }
+
+    public String getTextForServer(){
+        return TextForServer;
+    }
+
+    public void addTextForClient(String text){
+        TextForClient += text;
+    }
+
+    public String getTextForClient(){
+        return TextForClient;
     }
 }

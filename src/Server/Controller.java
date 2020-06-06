@@ -29,12 +29,13 @@ public class Controller implements Initializable{
     public TextField commentDirectorSide;
     public ImageView imageViewDirector;
     public Button updateButton;
-    public String questions;
+    public String TEXT;
     public TextField answerSide;
     User lector;//лектор
 
     int N = 1;//номер текущего слайда
     static Image img;//текущий слайд - картинка. Слайдов 7. БД содержит ссылки на картинки в виде сообщений для клиента,
+    Message current;//текущее сообщение
     //идентификация по типу сообщения и номеру слайда
 
     MultiThreadServer server;//сервер
@@ -46,7 +47,6 @@ public class Controller implements Initializable{
         try {
             lector = DAOUser.searchUser("Василий Петрович").get(0);
             server = new MultiThreadServer();
-            //server.start();
             imgCol = new ImageCollection();
         }catch(SQLException e){
             System.out.println(e);
@@ -62,57 +62,60 @@ public class Controller implements Initializable{
             //инициализация итератора
             iterator = imgCol.getIterator();
             //**установка картинки
-            Message current = new Message("1",String.valueOf(N),"$ @ #","image");
+            current = new Message("1",String.valueOf(N),"begin","image");
             if (iterator.hasNext()) {
                 ImageVision imageOne = (ImageVision) iterator.next();
                 imageViewDirector.setImage(SwingFXUtils.toFXImage(imageOne.getImage(),null));
                 current.setImageVision(imageOne);
                 server.setMessage(current);
-                System.out.println("Картинка установлена в imageViewDirector!");
+                System.out.println("Картинка установлена в imageViewDirector, слайд: "+imgCol.getCurrent());
             }
             else System.out.println("Следующей картинки не существует!");
             server.start();
-            System.out.println("Server запущен!");
-            //**смена значения текущего слайда на 1
-            //currentSlide(String.valueOf(N));
-            //**
+            System.out.println("MultiThreadServer запущен!");
         }catch(Exception e){
             System.out.println("Interrupted Exception in Controller.begin(): "+e);
         }
     }
 
     public void slideLeft(ActionEvent actionEvent) {
-        N--;//декрементируем счетчик слайда
         try {
-            //***смена значения текущего слайда
-            currentSlide(String.valueOf(N));
-            //***
-            //***установка картинки
-            //img = getImage(String.valueOf(N));
-            //imageViewDirector.setImage(img);
-            server.setMessage(DAOMessage.searchImageMessage(String.valueOf(N)));
-            System.out.println("Картинка установлена в imageViewDirector!");
-            //*****
+            ImageVision image = (ImageVision) iterator.preview();
+            imageViewDirector.setImage(SwingFXUtils.toFXImage(image.getImage(),null));
+            current = new Message("1",String.valueOf(imgCol.getCurrent()),"slideLeft","image");
+            current.setImageVision(image);
+            server.setMessage(current);
+            System.out.println("Картинка установлена в imageViewDirector и передана на сервер, слайд: "+imgCol.getCurrent());
         }catch (Exception e){
             System.out.println("Exception in slideLeft(): "+e);
         }
     }
 
     public void slideRight(ActionEvent actionEvent) {
-        N++;//инкрементируем счетчик слайда
         try {
-            //***смена значения текущего слайда
-            currentSlide(String.valueOf(N));
-            //**
-            //***установка картинки
-            //img = getImage(String.valueOf(N));
-            //imageViewDirector.setImage(img);
-            server.setMessage(DAOMessage.searchImageMessage(String.valueOf(N)));
-            System.out.println("Картинка установлена в imageViewDirector!");
-            //*****
+            if (iterator.hasNext()){
+                ImageVision image = (ImageVision) iterator.next();
+                imageViewDirector.setImage(SwingFXUtils.toFXImage(image.getImage(),null));
+                current = new Message("1",String.valueOf(imgCol.getCurrent()),"slideRight","image");
+                current.setImageVision(image);
+                server.setMessage(current);
+                System.out.println("Картинка установлена в imageViewDirector!");
+            }
+            else System.out.println("Следующей картинки не существует!");
+            System.out.println("Картинка установлена в imageViewDirector и передана на сервер, слайд: "+imgCol.getCurrent());
         }catch (Exception e){
             System.out.println("Exception in slideRight(): "+e);
         }
+    }
+
+    public void update(ActionEvent actionEvent) throws SQLException,
+            ClassNotFoundException, IOException{//update Director Chat
+        //TextAreaDirector.setText("");
+        TEXT = server.getTextForServer();
+        TextAreaDirector.setText(TEXT);
+        System.out.println("Вопросы обновлены!");
+        //пишем сообщение в БД (пока нет подключения, нет смысла писать. Как исправится - активировать!)
+        //insertingMessageToDB(current);
     }
 
     public void OKCommentDirect(ActionEvent actionEvent) throws InterruptedException, SQLException,
@@ -120,31 +123,28 @@ public class Controller implements Initializable{
         String comment = commentDirectorSide.getText();
         commentDirectorSide.setText("");
         System.out.println("Comment director: "+comment);
-        sendRecord(lector.getId(),String.valueOf(N),comment,"comment");
-        TextAreaDirector.appendText("Sl:"+N+". "+lector.getUsername()+": "+comment+", comment;\r\n");
+        server.addTextForClient("Sl: "+String.valueOf(imgCol.getCurrent())+", user: "+
+        DAOUser.searchUserFromId(lector.getId()).getUsername()+". Comment: "+comment+"\r\n");
+        TextAreaDirector.appendText(lector.getUsername()+": "+comment+", comment;\r\n");
+        //DAOMessage.insertMessage(new Message(lector.getId(),String.valueOf(imgCol.getCurrent()),comment,"comment"));
     }
 
     public void OKAnswer(ActionEvent actionEvent) throws InterruptedException, SQLException,
             ClassNotFoundException, IOException{//ответ Director
-        String message = answerSide.getText();
+        String answer = answerSide.getText();
         answerSide.setText("");
-        System.out.println("Ответ: "+message);
-        sendRecord(lector.getId(),String.valueOf(N),message,"answer");
-        TextAreaDirector.appendText("Sl:"+N+". "+lector.getUsername()+": "+message+", answer;\r\n");
+        System.out.println("Ответ director: "+answer);
+        server.addTextForClient("Sl: "+String.valueOf(imgCol.getCurrent())+", user: "+
+                DAOUser.searchUserFromId(lector.getId()).getUsername()+". Answer: "+answer+"\r\n");
+        TextAreaDirector.appendText(lector.getUsername()+": "+answer+", answer;\r\n");
+        //DAOMessage.insertMessage(new Message(lector.getId(),String.valueOf(imgCol.getCurrent()),answer,"answer"));
     }
 
     public void endPresent(ActionEvent actionEvent) throws SQLException, ClassNotFoundException{
-        //устанавливаем счетчик в несуществующее положение
-        currentSlide("999");
-    }
-
-    public void update(ActionEvent actionEvent) throws SQLException,
-            ClassNotFoundException, IOException{//update Director Chat
-        TextAreaDirector.setText("");
-        String questions = DAOMessage.searchListMessage("2","question");
-        questions += DAOMessage.searchListMessage("2","comment");
-        TextAreaDirector.appendText(questions);
-        System.out.println("Вопросы обновлены!");
+        if (server.isAlive()){
+            server.interrupt();
+        }
+        else System.out.println("Сервер уже закрыт!");
     }
 
     //***вспомогательные функции
@@ -165,6 +165,12 @@ public class Controller implements Initializable{
     private void currentSlide(String id_slide) throws SQLException, ClassNotFoundException{
         DAOMessage.updateSlideNumber(id_slide);
         System.out.println("Значение текущего слайда обновлено");
+    }
+
+    private void insertingMessageToDB(Message entry) throws IOException, SQLException, ClassNotFoundException{
+        //*******ДОБАВКА СООБЩЕНИЯ В БД
+        DAOMessage.insertMessage(entry);
+        System.out.println("MultiThreadServer Controller записал сообщение в БД!"+entry);
     }
     //***
 

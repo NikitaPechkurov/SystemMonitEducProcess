@@ -41,15 +41,36 @@ public class ImageCollection implements Aggregate {
             return null;
         }
 
+        private boolean hasPrevious(){
+            current--;
+            String slideNum = String.valueOf(current);
+            try {
+                URL url = new URL(DAOMessage.searchImageMessage(slideNum).getMessage());
+                currentSlide = new ImageVision(ImageIO.read(url));
+                System.out.println("Номер выданного слайда:" + slideNum);
+                return true;
+            } catch (Exception ex) {
+                System.err.println("Неудалось загрузить картинку! " + slideNum);
+                ex.printStackTrace();
+                return false;
+            }
+        }
+
 
         public Object preview() {
-            return this;
+            if (hasPrevious()) {
+                return currentSlide;
+            }else return null;
         }
     }
 
     @Override
     public Iterator getIterator() {
         return new ImageIterator();
-
     }
+
+    public int getCurrent(){
+        return current;
+    }
+
 }

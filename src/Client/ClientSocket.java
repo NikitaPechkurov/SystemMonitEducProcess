@@ -14,13 +14,13 @@ public class ClientSocket extends Thread{
     private ObjectOutputStream objos;
     private ObjectInputStream oin;
     private Message message;//контейнер для Message уже на стороне клиента
-    private String questions;
     private String answers;
 
     public ClientSocket() {
         try {
             // создаём сокет общения на стороне клиента
             socket = new Socket("localhost", 3214);
+            message = new Message("1","1","begin","image");
             System.out.println("New Client connected to socket!");
             Thread.sleep(2000);
         } catch (Exception e) {
@@ -35,8 +35,8 @@ public class ClientSocket extends Thread{
                  {
             oos = new DataOutputStream(socket.getOutputStream());
             ois = new DataInputStream(socket.getInputStream());
-                     objos = new ObjectOutputStream(oos);
-                     oin = new ObjectInputStream(ois);
+            objos = new ObjectOutputStream(oos);
+            oin = new ObjectInputStream(ois);
             System.out.println("Client DOS & DIS initialized");
 
             while (!socket.isClosed()) {
@@ -46,7 +46,7 @@ public class ClientSocket extends Thread{
                 System.out.println("reading...");
                 //ПОТОМ ЧТЕНИЕ!
                 //клиент-сокет может попросить загрузить вопрос, комментарий; послать ему картинку, первую картинку; и обновить клиентский чат
-                if (message.getType().equals("question") || message.getType().equals("comment")) {
+                if (message.getType().equals("question") || message.getType().equals("commentClient")) {
                     listening();
                 } else if (/*message.getType().equals("getImage") ||*/ message.getType().equals("getSlide")) {
                     gettingImage();
@@ -84,11 +84,11 @@ public class ClientSocket extends Thread{
 
 
     //геттеры для возвращения полезных данных
-    public void setMessage(Message mes){
+    public synchronized void setMessage(Message mes){
         this.message = mes;
     }
 
-    public Message getMessage(){
+    public synchronized Message getMessage(){
         return message;
     }
 

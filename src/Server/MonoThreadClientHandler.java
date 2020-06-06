@@ -1,6 +1,7 @@
 package Server;
 
 import Connection.DAOMessage;
+import Connection.DAOUser;
 import Model.Message;
 import javafx.embed.swing.SwingFXUtils;
 
@@ -39,7 +40,7 @@ public class MonoThreadClientHandler extends Thread {
             // начинаем диалог с подключенным клиентом в цикле, пока сокет не
             // закрыт клиентом
             while (!clientDialog.isClosed()) {
-                System.out.println("Server reading from channel");
+                System.out.println("MultiThreadServer reading from channel");
                 oin = new ObjectInputStream(in);
                 outputStream = new ObjectOutputStream(out);
                 System.out.println("Object -input -output Stream created");
@@ -54,8 +55,12 @@ public class MonoThreadClientHandler extends Thread {
 
                     //ПОТОМ ЗАПИСАЛИ!
                     if (entry_message.getType().equals("question") ||
-                            entry_message.getType().equals("comment")) {
-                        insertingMessageToDB(entry_message);
+                            entry_message.getType().equals("commentClient")) {
+                        server.setMessage(entry_message);//?
+                        server.addTextForServer("Sl: "+entry_message.getId_slide()+", user: "+
+                        DAOUser.searchUserFromId(entry_message.getId_user()).getUsername()+". "+entry_message.getType()+
+                                ": "+entry_message.getMessage()+"\r\n");
+                        out.writeUTF("Handler передал вопрос/комментарий серверу.");
                     }
 
                     /*else if(entry_message.getType().equals("getImage")){//получение картинки слайда для окна лектора
@@ -71,8 +76,7 @@ public class MonoThreadClientHandler extends Thread {
                         outputStream.flush();
                         System.out.println("Message с такой картинкой слайда вернули на clientSocket!: "+ SwingFXUtils.toFXImage(toClient.getImageVision().getImage(),null).impl_getUrl());
                     } else if (entry_message.getType().equals("updateClientChat")) {
-                        String answers = DAOMessage.searchListMessage("1", "answer");
-                        answers += DAOMessage.searchListMessage("1", "comment");
+                        String answers = server.getTextForClient();
                         outputStream.writeObject(answers);
                         outputStream.flush();
                         System.out.println("Сервер передал строку answers на клиент-сокет!");
@@ -80,9 +84,9 @@ public class MonoThreadClientHandler extends Thread {
 
                     /*else if(entry_message.getType().equals("currentSlide")){
                         DAOMessage.updateSlideNumber(entry_message);
-                        System.out.println("Server try writing to channel");
+                        System.out.println("MultiThreadServer try writing to channel");
                         out.writeUTF("Значение текущего слайда обновлено в БД!");
-                        System.out.println("Server Wrote message to clientDialog.");
+                        System.out.println("MultiThreadServer Wrote message to clientDialog.");
                     }*/
 
                     else System.out.println("********Непонятный тип сообщения Message*******");
@@ -94,8 +98,8 @@ public class MonoThreadClientHandler extends Thread {
 
                 // освобождаем буфер сетевых сообщений
                 out.flush();
-                oin.close();//закрываем именно ObjectInputStream
-                outputStream.close();
+                //oin.close();//закрываем именно ObjectInputStream
+                //outputStream.close();
                 // возвращаемся в началло для считывания нового сообщения
             }
 
@@ -106,6 +110,8 @@ public class MonoThreadClientHandler extends Thread {
             // закрываем сначала каналы сокета !
             in.close();
             out.close();
+            //oin.close();//закрываем именно ObjectInputStream
+            //outputStream.close();
             // потом закрываем сокет общения с клиентом в нити моносервера
             clientDialog.close();
             System.out.println("Closing connections & channels - DONE.");
@@ -115,15 +121,6 @@ public class MonoThreadClientHandler extends Thread {
             // TODO Auto-generated catch block
             //e.printStackTrace();
         }
-    }
-
-    private void insertingMessageToDB(Message entry) throws IOException, SQLException, ClassNotFoundException{
-        //*******ДОБАВКА СООБЩЕНИЯ В БД
-        DAOMessage.insertMessage(entry);
-        //и выводим в консоль
-        System.out.println("Server try writing to channel");
-        out.writeUTF("Сообщение было записано в БД!");
-        System.out.println("Server Wrote message to clientDialog.");
     }
 
 }
