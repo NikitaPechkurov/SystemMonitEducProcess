@@ -29,11 +29,11 @@ public class Controller implements Initializable{
     public TextField commentDirectorSide;
     public ImageView imageViewDirector;
     public Button updateButton;
+
     public String TEXT;
     public TextField answerSide;
     User lector;//лектор
 
-    int N = 1;//номер текущего слайда
     static Image img;//текущий слайд - картинка. Слайдов 7. БД содержит ссылки на картинки в виде сообщений для клиента,
     Message current;//текущее сообщение
     //идентификация по типу сообщения и номеру слайда
@@ -62,7 +62,7 @@ public class Controller implements Initializable{
             //инициализация итератора
             iterator = imgCol.getIterator();
             //**установка картинки
-            current = new Message("1",String.valueOf(N),"begin","image");
+            current = new Message("1",String.valueOf(imgCol.getCurrent()),"begin","image");
             if (iterator.hasNext()) {
                 ImageVision imageOne = (ImageVision) iterator.next();
                 imageViewDirector.setImage(SwingFXUtils.toFXImage(imageOne.getImage(),null));

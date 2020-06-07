@@ -31,8 +31,8 @@ public class ClientSocket extends Thread{
     @Override
     public void run() {
         try  // создаём объект для записи сообщений в созданный скокет, для
-                // чтения сообщений из сокета
-                 {
+        // чтения сообщений из сокета
+        {
             oos = new DataOutputStream(socket.getOutputStream());
             ois = new DataInputStream(socket.getInputStream());
             objos = new ObjectOutputStream(oos);
@@ -54,17 +54,16 @@ public class ClientSocket extends Thread{
                     answers = (String) oin.readObject();
                     System.out.println("С сервера пришло " + answers.length() + " символов.");
                 }
-
             }
 
+            oos.close();ois.close();//закрываем
+            objos.close();oin.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             System.out.println("IOEx clientSocket.run()");
-            } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
+        } catch (InterruptedException e) {
             System.out.println("Interrupted clientSocket.run()");
-        }catch (ClassNotFoundException e){
-            System.out.println("ClassNotFoundEx clientSocket.run(): "+e);
+        } catch (ClassNotFoundException e) {
+            System.out.println("ClassNotFoundEx clientSocket.run(): " + e);
         }
     }
 

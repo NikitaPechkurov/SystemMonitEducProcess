@@ -54,6 +54,7 @@ public class MultiThreadServer extends Thread {
             for (int i = 0;i < connections.size(); i++){// = executeIt.shutdown();
                 connections.get(i).interrupt();
             }
+            server.close();
             System.out.println("All connections are closed!");
         } catch (IOException e) {
             e.printStackTrace();

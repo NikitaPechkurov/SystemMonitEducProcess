@@ -49,10 +49,11 @@ public class ClientController implements Initializable {
         clientSocket.setMessage(new Message(student.getId(),"","","getSlide"));
         System.out.println("Отправлено сообщение с просьбой передать текущий слайд");
         clientSocket.start();
-        Thread.sleep(9000);
+        Thread.sleep(2000);
         T = clientSocket.getMessage();
         ImageVision imageOneClient = T.getImageVision();//полученная картинка первого слайда
         imageViewClient.setImage(SwingFXUtils.toFXImage(imageOneClient.getImage(),null));
+        //clientSocket.stop();
         //System.out.println("Картинка установлена в ImageViewClient! " + imageOneClient.impl_getUrl());
     }
 
@@ -60,11 +61,13 @@ public class ClientController implements Initializable {
         try {
             clientSocket.setMessage(new Message(student.getId(),"","","getSlide"));
             System.out.println("Отправлено сообщение с просьбой передать текущий слайд");
-            Thread.sleep(9000);
+            //clientSocket.start();
+            Thread.sleep(5000);
             T = clientSocket.getMessage();
             ImageVision imageOneClient = T.getImageVision();//полученная картинка первого слайда
             imageViewClient.setImage(SwingFXUtils.toFXImage(imageOneClient.getImage(),null));
             System.out.println("Изображение получено!");
+            //clientSocket.stop();
         }catch (Exception e){
             System.out.println("Нужной картинки, видимо, не пришло или сервер неактивен!: "+e);
         }
