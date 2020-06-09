@@ -21,7 +21,6 @@ public class MonoThreadClientHandler extends Thread {
     public MonoThreadClientHandler(Socket client, MultiThreadServer server) {
         clientDialog = client;
         this.server = server;
-        this.start();
     }
 
     @Override
@@ -50,15 +49,15 @@ public class MonoThreadClientHandler extends Thread {
                 // и выводим в консоль
                 System.out.println("READ from clientDialog message - " + entry_message.record());
                 //Thread.sleep(5000);
-
                 //ПОТОМ ЗАПИСАЛИ!
                 if (entry_message.getType().equals("question") ||
                         entry_message.getType().equals("commentClient")) {
                     server.setMessage(entry_message);//?
                     server.addTextForServer("Sl: " + entry_message.getId_slide() + ", user: " +
-                            DAOUser.searchUserFromId(entry_message.getId_user()).getUsername() + ". " + entry_message.getType() +
-                            ": " + entry_message.getMessage() + "\r\n");
+                            DAOUser.searchUserFromId(entry_message.getId_user()).getUsername() + ", type: " + entry_message.getType() +
+                            ", mes: " + entry_message.getMessage() + "\r\n");
                     out.writeUTF("Handler передал вопрос/комментарий серверу.");
+                    out.flush();
                 }
 
                     /*else if(entry_message.getType().equals("getImage")){//получение картинки слайда для окна лектора
@@ -91,7 +90,8 @@ public class MonoThreadClientHandler extends Thread {
 
                 // освобождаем буфер сетевых сообщений
                 //out.flush();
-                // тут происходит возвращение в началло для считывания нового сообщения
+                //outputStream.flush();
+                // тут происходит возвращение в начало для считывания нового сообщения
             }
             System.out.println("Client disconnected");
             System.out.println("Closing connections & channels.");
@@ -110,7 +110,9 @@ public class MonoThreadClientHandler extends Thread {
             System.out.println("ClassNotF: " + ec);
         } catch (SQLException e) {
             System.out.println("SQLException: " + e);
-        }
+        } //catch (InterruptedException iex) {
+            //System.out.println("Interrupted : "+iex);
+        //}
     }
 
 }

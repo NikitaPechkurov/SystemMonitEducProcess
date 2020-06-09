@@ -124,8 +124,9 @@ public class Controller implements Initializable{
         commentDirectorSide.setText("");
         System.out.println("Comment director: "+comment);
         server.addTextForClient("Sl: "+String.valueOf(imgCol.getCurrent())+", user: "+
-        DAOUser.searchUserFromId(lector.getId()).getUsername()+". Comment: "+comment+"\r\n");
-        TextAreaDirector.appendText(lector.getUsername()+": "+comment+", comment;\r\n");
+        DAOUser.searchUserFromId(lector.getId()).getUsername()+", type: comment, mes: "+comment+"\r\n");
+        TextAreaDirector.appendText("Sl: "+String.valueOf(imgCol.getCurrent())+", user: "+lector.getUsername()
+                +", type: comement, ,mes: "+comment+"\r\n");
         //DAOMessage.insertMessage(new Message(lector.getId(),String.valueOf(imgCol.getCurrent()),comment,"comment"));
     }
 
@@ -135,8 +136,9 @@ public class Controller implements Initializable{
         answerSide.setText("");
         System.out.println("Ответ director: "+answer);
         server.addTextForClient("Sl: "+String.valueOf(imgCol.getCurrent())+", user: "+
-                DAOUser.searchUserFromId(lector.getId()).getUsername()+". Answer: "+answer+"\r\n");
-        TextAreaDirector.appendText(lector.getUsername()+": "+answer+", answer;\r\n");
+                DAOUser.searchUserFromId(lector.getId()).getUsername()+", type: answer, mes: "+answer+"\r\n");
+        TextAreaDirector.appendText("Sl: "+String.valueOf(imgCol.getCurrent())+",user: "+lector.getUsername()
+                +", type: answer, mes: "+answer+"\r\n");
         //DAOMessage.insertMessage(new Message(lector.getId(),String.valueOf(imgCol.getCurrent()),answer,"answer"));
     }
 

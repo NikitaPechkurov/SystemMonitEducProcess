@@ -17,6 +17,7 @@ public class MultiThreadServer extends Thread {
     private Message message;
     private String TextForServer;
     private String TextForClient;
+    private MonoThreadClientHandler handler;
 
     public MultiThreadServer() throws IOException{
         try {
@@ -34,8 +35,8 @@ public class MultiThreadServer extends Thread {
             System.out.println("Server socket created!");
 
             // стартуем цикл при условии что серверный сокет не закрыт
-            while (!server.isClosed()) {
-
+            //while (!server.isClosed()) {
+            while (true) {
                 // подключения к сокету общения под именем - "clientDialog" на
                 // серверной стороне
                 Socket client = server.accept();
@@ -44,18 +45,18 @@ public class MultiThreadServer extends Thread {
                 // в Runnable(при необходимости можно создать Callable)
                 // монопоточную нить = сервер - MonoThreadClientHandler и тот
                 // продолжает общение от лица сервера
-                connections.add(new MonoThreadClientHandler(client,this));
+                handler = new MonoThreadClientHandler(client,this);
+                connections.add(handler);
+                handler.start();
                 System.out.print("Connection accepted.");
-                //стремиться к прохождению по списку и передать image
-                //executeIt.shutdownNow().get(1).run();//обратиться к каждому MonoThread
             }
 
             // закрытие пула нитей после завершения работы всех нитей
-            for (int i = 0;i < connections.size(); i++){// = executeIt.shutdown();
+            /*for (int i = 0;i < connections.size(); i++){// = executeIt.shutdown();
                 connections.get(i).interrupt();
-            }
-            server.close();
-            System.out.println("All connections are closed!");
+            }*/
+            //server.close();
+            //System.out.println("All connections are closed!");
         } catch (IOException e) {
             e.printStackTrace();
         }

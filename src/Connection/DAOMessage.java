@@ -131,7 +131,7 @@ public class DAOMessage {
         }
     }
 
-    //обновление строки текущего слайда
+    //обновление строки номера текущего слайда
     public static void updateSlideNumber(String slideNum) throws SQLException,ClassNotFoundException {
         String updateStmt = "UPDATE "+DBConnect.nameColTables.MESSAGES + " SET "+DBConnect.nameColMessage.ID_SLIDE+ " = "+
                 slideNum +" WHERE "+DBConnect.nameColMessage.TYPE + " = "+"'currentSlide';";

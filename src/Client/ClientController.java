@@ -47,27 +47,26 @@ public class ClientController implements Initializable {
     public void connect(ActionEvent actionEvent) throws InterruptedException, IOException{
         connectButton.setDisable(true);
         clientSocket.setMessage(new Message(student.getId(),"","","getSlide"));
+        clientSocket.setFlag(true);
         System.out.println("Отправлено сообщение с просьбой передать текущий слайд");
         clientSocket.start();
-        Thread.sleep(2000);
+        Thread.sleep(9000);
         T = clientSocket.getMessage();
         ImageVision imageOneClient = T.getImageVision();//полученная картинка первого слайда
         imageViewClient.setImage(SwingFXUtils.toFXImage(imageOneClient.getImage(),null));
-        //clientSocket.stop();
         //System.out.println("Картинка установлена в ImageViewClient! " + imageOneClient.impl_getUrl());
     }
 
     public void onNextImage(ActionEvent actionEvent) {
         try {
             clientSocket.setMessage(new Message(student.getId(),"","","getSlide"));
+            clientSocket.setFlag(true);
             System.out.println("Отправлено сообщение с просьбой передать текущий слайд");
-            //clientSocket.start();
-            Thread.sleep(5000);
+            Thread.sleep(9000);
             T = clientSocket.getMessage();
             ImageVision imageOneClient = T.getImageVision();//полученная картинка первого слайда
             imageViewClient.setImage(SwingFXUtils.toFXImage(imageOneClient.getImage(),null));
             System.out.println("Изображение получено!");
-            //clientSocket.stop();
         }catch (Exception e){
             System.out.println("Нужной картинки, видимо, не пришло или сервер неактивен!: "+e);
         }
@@ -78,7 +77,7 @@ public class ClientController implements Initializable {
         commentSide.setText("");
         System.out.println("Comment client: "+comment);
         sendRecord(student.getId(),T.getId_slide(),comment,"commentClient");
-        TextAreaClient.appendText(student.getUsername()+": "+comment+", comment;\r\n");
+        TextAreaClient.appendText("Sl: "+T.getId_slide()+", user: "+student.getUsername()+", type: comment, mes: "+comment+"\r\n");
     }
 
     public void OKQuestion(ActionEvent actionEvent) throws InterruptedException, IOException{
@@ -86,12 +85,13 @@ public class ClientController implements Initializable {
         questionSide.setText("");
         System.out.println("Вопрос client: "+question);
         sendRecord(student.getId(),T.getId_slide(),question,"question");
-        TextAreaClient.appendText(student.getUsername()+": "+question+", question;\r\n");
+        TextAreaClient.appendText("Sl: "+T.getId_slide()+", user: "+student.getUsername()+", type: question, mes: "+question+"\r\n");
     }
 
     public void updateClientChat(ActionEvent actionEvent) throws InterruptedException, IOException{
         TextAreaClient.setText("");
         clientSocket.setMessage(new Message(student.getId(),T.getId_slide(),"","updateClientChat"));
+        clientSocket.setFlag(true);
         Thread.sleep(9000);
         answers = clientSocket.getAnswers();
         TextAreaClient.appendText(answers);
@@ -109,6 +109,7 @@ public class ClientController implements Initializable {
 
     private void sendRecord(String username, String nn, String mes, String type) throws InterruptedException, IOException{
         clientSocket.setMessage(new Message(username,nn,mes,type));
+        clientSocket.setFlag(true);
         Thread.sleep(10);
     }
     //***
