@@ -38,7 +38,7 @@ public class ClientController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        student = new User("1","Студент","student","student");//интерпретация студента
+        student = new User("2","Студент","student","student");//интерпретация студента
         clientSocket = new ClientSocket();
     }
 
@@ -48,7 +48,7 @@ public class ClientController implements Initializable {
         clientSocket.setFlag(true);
         System.out.println("Отправлено сообщение с просьбой передать текущий слайд");
         clientSocket.start();
-        Thread.sleep(9000);
+        Thread.sleep(1000);
         current = clientSocket.getMessage();
         ImageVision imageOneClient = current.getImageVision();//полученная картинка первого слайда
         imageViewClient.setImage(SwingFXUtils.toFXImage(imageOneClient.getImage(),null));
@@ -59,7 +59,7 @@ public class ClientController implements Initializable {
             clientSocket.setMessage(new Message(student.getId(),"","","getSlide"));
             clientSocket.setFlag(true);
             System.out.println("Отправлено сообщение с просьбой передать текущий слайд");
-            Thread.sleep(9000);
+            Thread.sleep(1000);
             current = clientSocket.getMessage();
             ImageVision imageOneClient = current.getImageVision();//полученная картинка первого слайда
             imageViewClient.setImage(SwingFXUtils.toFXImage(imageOneClient.getImage(),null));
@@ -86,12 +86,12 @@ public class ClientController implements Initializable {
     }
 
     public void updateClientChat(ActionEvent actionEvent) throws InterruptedException, IOException{
-        TextAreaClient.setText("");
+        //TextAreaClient.setText(" ");
         clientSocket.setMessage(new Message(student.getId(),current.getId_slide(),"","updateClientChat"));
         clientSocket.setFlag(true);
-        Thread.sleep(9000);
+        Thread.sleep(1000);
         answers = clientSocket.getAnswers();
-        TextAreaClient.appendText(answers);
+        TextAreaClient.appendText(" "+answers);
         System.out.println("Ответы обновлены!");
     }
 

@@ -108,7 +108,7 @@ public class Controller implements Initializable{
 
     public void update(ActionEvent actionEvent) throws SQLException,
             ClassNotFoundException, IOException{//update Director Chat
-        TextAreaDirector.setText("");
+        //TextAreaDirector.setText(" ");
         TEXT = server.getTextForServer();
         TextAreaDirector.setText(TEXT);
         System.out.println("Вопросы обновлены!");
