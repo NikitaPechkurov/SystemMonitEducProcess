@@ -29,14 +29,12 @@ public class Controller implements Initializable{
     public TextField commentDirectorSide;
     public ImageView imageViewDirector;
     public Button updateButton;
-
-    public String TEXT;
     public TextField answerSide;
+
+    public String TEXT;//отображаемый в окне текст
     User lector;//лектор
 
-    static Image img;//текущий слайд - картинка. Слайдов 7. БД содержит ссылки на картинки в виде сообщений для клиента,
     Message current;//текущее сообщение
-    //идентификация по типу сообщения и номеру слайда
 
     MultiThreadServer server;//сервер
     ImageCollection imgCol;
@@ -110,11 +108,10 @@ public class Controller implements Initializable{
 
     public void update(ActionEvent actionEvent) throws SQLException,
             ClassNotFoundException, IOException{//update Director Chat
-        //TextAreaDirector.setText("");
+        TextAreaDirector.setText("");
         TEXT = server.getTextForServer();
         TextAreaDirector.setText(TEXT);
         System.out.println("Вопросы обновлены!");
-        //пишем сообщение в БД (пока нет подключения, нет смысла писать. Как исправится - активировать!)
         //insertingMessageToDB(current);
     }
 
@@ -150,29 +147,10 @@ public class Controller implements Initializable{
     }
 
     //***вспомогательные функции
-    private void sendRecord(String username, String nn, String mes, String type) throws InterruptedException, SQLException,
-            ClassNotFoundException,IOException{
-        DAOMessage.insertMessage(new Message(username,nn,mes,type));
-        Thread.sleep(10);
-        System.out.println("Сообщение было записано в БД!");
-    }
-
-    private Message getImageMessage(String id_slide) throws InterruptedException, SQLException,
-            ClassNotFoundException, IOException{
-        Message t = DAOMessage.searchImageMessage(id_slide);
-        Thread.sleep(12000);//задержка расчитана экспериментально
-        return t;
-    }
-
-    private void currentSlide(String id_slide) throws SQLException, ClassNotFoundException{
-        DAOMessage.updateSlideNumber(id_slide);
-        System.out.println("Значение текущего слайда обновлено");
-    }
-
     private void insertingMessageToDB(Message entry) throws IOException, SQLException, ClassNotFoundException{
         //*******ДОБАВКА СООБЩЕНИЯ В БД
         DAOMessage.insertMessage(entry);
-        System.out.println("MultiThreadServer Controller записал сообщение в БД!"+entry);
+        System.out.println("ServerController записал сообщение в БД!"+entry);
     }
     //***
 

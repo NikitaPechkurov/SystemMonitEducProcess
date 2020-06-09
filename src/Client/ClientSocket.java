@@ -15,7 +15,7 @@ public class ClientSocket extends Thread{
     private ObjectInputStream oin;
     private Message message;//контейнер для Message уже на стороне клиента
     private String answers;
-    private boolean flag = false;
+    private boolean flag = false;//защелка для общения с сервером
 
     public ClientSocket() {
         try {
@@ -50,21 +50,21 @@ public class ClientSocket extends Thread{
                     //клиент-сокет может попросить загрузить вопрос, комментарий; послать ему картинку, первую картинку; и обновить клиентский чат
                     if (message.getType().equals("question") || message.getType().equals("commentClient")) {
                         listening();
-                    } else if (/*message.getType().equals("getImage") ||*/ message.getType().equals("getSlide")) {
+                    } else if (message.getType().equals("getSlide")) {
                         gettingImage();
                     } else if (message.getType().equals("updateClientChat")) {
                         answers = (String) oin.readObject();
                         System.out.println("С сервера пришло " + answers.length() + " символов.");
                     }
-                    flag = false;
+                    flag = false;//после обработки установили защелку
                 }
             }
-
             oos.close();
             ois.close();//закрываем
             objos.close();
             oin.close();
             socket.close();
+
         } catch (IOException e) {
             System.out.println("IOEx clientSocket.run()");
         } catch (InterruptedException e) {
@@ -101,11 +101,10 @@ public class ClientSocket extends Thread{
     public String getAnswers(){
         return answers;
     }
+    //
 
-    public void setFlag(boolean flag) {
+    public void setFlag(boolean flag) {//для установки защелки
         this.flag = flag;
     }
-
-    //
 
 }

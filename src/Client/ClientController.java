@@ -31,16 +31,14 @@ public class ClientController implements Initializable {
     public Button updateClientChatButt;
     public TextArea TextAreaClient;
     User student;//студент (пользователь)
-
-    Image img;//текущий слайд - картинка. Слайдов 7. БД содержит ссылки на картинки в виде сообщений для клиента,
-    //идентификация по типу сообщения и номеру слайда
-    Message T;//текущее сообщение
+    
+    Message current;//текущее сообщение
 
     ClientSocket clientSocket;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        student = new User("1","Студент","student","student");
+        student = new User("1","Студент","student","student");//интерпретация студента
         clientSocket = new ClientSocket();
     }
 
@@ -51,10 +49,9 @@ public class ClientController implements Initializable {
         System.out.println("Отправлено сообщение с просьбой передать текущий слайд");
         clientSocket.start();
         Thread.sleep(9000);
-        T = clientSocket.getMessage();
-        ImageVision imageOneClient = T.getImageVision();//полученная картинка первого слайда
+        current = clientSocket.getMessage();
+        ImageVision imageOneClient = current.getImageVision();//полученная картинка первого слайда
         imageViewClient.setImage(SwingFXUtils.toFXImage(imageOneClient.getImage(),null));
-        //System.out.println("Картинка установлена в ImageViewClient! " + imageOneClient.impl_getUrl());
     }
 
     public void onNextImage(ActionEvent actionEvent) {
@@ -63,8 +60,8 @@ public class ClientController implements Initializable {
             clientSocket.setFlag(true);
             System.out.println("Отправлено сообщение с просьбой передать текущий слайд");
             Thread.sleep(9000);
-            T = clientSocket.getMessage();
-            ImageVision imageOneClient = T.getImageVision();//полученная картинка первого слайда
+            current = clientSocket.getMessage();
+            ImageVision imageOneClient = current.getImageVision();//полученная картинка первого слайда
             imageViewClient.setImage(SwingFXUtils.toFXImage(imageOneClient.getImage(),null));
             System.out.println("Изображение получено!");
         }catch (Exception e){
@@ -76,21 +73,21 @@ public class ClientController implements Initializable {
         String comment = commentSide.getText();
         commentSide.setText("");
         System.out.println("Comment client: "+comment);
-        sendRecord(student.getId(),T.getId_slide(),comment,"commentClient");
-        TextAreaClient.appendText("Sl: "+T.getId_slide()+", user: "+student.getUsername()+", type: comment, mes: "+comment+"\r\n");
+        sendRecord(student.getId(),current.getId_slide(),comment,"commentClient");
+        TextAreaClient.appendText("Sl: "+current.getId_slide()+", user: "+student.getUsername()+", type: comment, mes: "+comment+"\r\n");
     }
 
     public void OKQuestion(ActionEvent actionEvent) throws InterruptedException, IOException{
         String question = questionSide.getText();
         questionSide.setText("");
         System.out.println("Вопрос client: "+question);
-        sendRecord(student.getId(),T.getId_slide(),question,"question");
-        TextAreaClient.appendText("Sl: "+T.getId_slide()+", user: "+student.getUsername()+", type: question, mes: "+question+"\r\n");
+        sendRecord(student.getId(),current.getId_slide(),question,"question");
+        TextAreaClient.appendText("Sl: "+current.getId_slide()+", user: "+student.getUsername()+", type: question, mes: "+question+"\r\n");
     }
 
     public void updateClientChat(ActionEvent actionEvent) throws InterruptedException, IOException{
         TextAreaClient.setText("");
-        clientSocket.setMessage(new Message(student.getId(),T.getId_slide(),"","updateClientChat"));
+        clientSocket.setMessage(new Message(student.getId(),current.getId_slide(),"","updateClientChat"));
         clientSocket.setFlag(true);
         Thread.sleep(9000);
         answers = clientSocket.getAnswers();
@@ -99,14 +96,6 @@ public class ClientController implements Initializable {
     }
 
     //***ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ***
-    /*private Message getSlideMessage(String id_user) throws InterruptedException{
-        clientSocket.setMessage(new Message(id_user,"","","getSlide"));
-        System.out.println("Отправлено сообщение с просьбой передать текущий слайд");
-        Thread.sleep(12000);
-        Message t = clientSocket.getMessage();
-        return t;
-    }*/
-
     private void sendRecord(String username, String nn, String mes, String type) throws InterruptedException, IOException{
         clientSocket.setMessage(new Message(username,nn,mes,type));
         clientSocket.setFlag(true);

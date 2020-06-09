@@ -28,7 +28,6 @@ public class MonoThreadClientHandler extends Thread {
 
         try {
             // инициируем каналы общения в сокете, для сервера
-
             // канал записи в сокет следует инициализировать сначала канал чтения для избежания блокировки выполнения программы на ожидании заголовка в сокете
             out = new DataOutputStream(clientDialog.getOutputStream());
             // канал чтения из сокета
@@ -44,12 +43,10 @@ public class MonoThreadClientHandler extends Thread {
                 System.out.println("MonoThreadHandler reading from channel");
                 // серверная нить ждёт в канале чтения (inputstream) получения
                 // данных клиента после получения данных считывает их
-                //СНАЧАЛА ПРОЧИТАЛИ
                 Message entry_message = (Message) oin.readObject();
                 // и выводим в консоль
                 System.out.println("READ from clientDialog message - " + entry_message.record());
                 //Thread.sleep(5000);
-                //ПОТОМ ЗАПИСАЛИ!
                 if (entry_message.getType().equals("question") ||
                         entry_message.getType().equals("commentClient")) {
                     server.setMessage(entry_message);//?
@@ -59,13 +56,6 @@ public class MonoThreadClientHandler extends Thread {
                     out.writeUTF("Handler передал вопрос/комментарий серверу.");
                     out.flush();
                 }
-
-                    /*else if(entry_message.getType().equals("getImage")){//получение картинки слайда для окна лектора
-                        outputStream.writeObject(DAOMessage.searchImageMessage(entry_message.getId_slide()));
-                        outputStream.flush();
-                        System.out.println("Message с картинкой вернули на админский clientSocket!");
-                    }*/
-
                 else if (entry_message.getType().equals("getSlide")) {//получение текущей картинки слайда при подключении клиента
                     Message toClient = server.getMessage();
                     outputStream.writeObject(toClient);
@@ -79,15 +69,7 @@ public class MonoThreadClientHandler extends Thread {
                     System.out.println("Сервер передал строку answers на клиент-сокет!");
                 }
 
-                    /*else if(entry_message.getType().equals("currentSlide")){
-                        DAOMessage.updateSlideNumber(entry_message);
-                        System.out.println("MultiThreadServer try writing to channel");
-                        out.writeUTF("Значение текущего слайда обновлено в БД!");
-                        System.out.println("MultiThreadServer Wrote message to clientDialog.");
-                    }*/
-
                 else System.out.println("********Непонятный тип сообщения Message*******");
-
                 // освобождаем буфер сетевых сообщений
                 //out.flush();
                 //outputStream.flush();
