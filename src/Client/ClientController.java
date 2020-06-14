@@ -33,6 +33,7 @@ public class ClientController implements Initializable {
     User student;//студент (пользователь)
     
     Message current;//текущее сообщение
+    String TextThereClient;//переменная накопления сообщений на клиента (оптимизация чата)
 
     ClientSocket clientSocket;
 
@@ -74,7 +75,9 @@ public class ClientController implements Initializable {
         commentSide.setText("");
         System.out.println("Comment client: "+comment);
         sendRecord(student.getId(),current.getId_slide(),comment,"commentClient");
-        TextAreaClient.appendText("Sl: "+current.getId_slide()+", user: "+student.getUsername()+", type: comment, mes: "+comment+"\r\n");
+        //накопили свой текст
+        TextThereClient += "Sl: "+current.getId_slide()+", user: "+student.getUsername()+", type: comment, mes: "+comment+"\r\n";
+        TextAreaClient.setText(TextThereClient);//заменили на накопленный
     }
 
     public void OKQuestion(ActionEvent actionEvent) throws InterruptedException, IOException{
@@ -82,7 +85,8 @@ public class ClientController implements Initializable {
         questionSide.setText("");
         System.out.println("Вопрос client: "+question);
         sendRecord(student.getId(),current.getId_slide(),question,"question");
-        TextAreaClient.appendText("Sl: "+current.getId_slide()+", user: "+student.getUsername()+", type: question, mes: "+question+"\r\n");
+        TextThereClient += "Sl: "+current.getId_slide()+", user: "+student.getUsername()+", type: question, mes: "+question+"\r\n";
+        TextAreaClient.setText(TextThereClient);//заменили на накопленный
     }
 
     public void updateClientChat(ActionEvent actionEvent) throws InterruptedException, IOException{
@@ -90,8 +94,9 @@ public class ClientController implements Initializable {
         clientSocket.setMessage(new Message(student.getId(),current.getId_slide(),"","updateClientChat"));
         clientSocket.setFlag(true);
         Thread.sleep(1000);
-        answers = clientSocket.getAnswers();
-        TextAreaClient.appendText(" "+answers);
+        //для оптимизации:
+        TextThereClient = TextThereClient + clientSocket.getMessage().getMessage();//заново создаем полный текст чата
+        TextAreaClient.setText(TextThereClient);
         System.out.println("Ответы обновлены!");
     }
 

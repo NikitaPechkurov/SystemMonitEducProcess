@@ -30,8 +30,9 @@ public class Controller implements Initializable{
     public ImageView imageViewDirector;
     public Button updateButton;
     public TextField answerSide;
-
+    //оптимизация чата
     public String TEXT;//отображаемый в окне текст
+    public String TextThere;//для накопления записанных преподавателем ответов и комм
     User lector;//лектор
 
     Message current;//текущее сообщение
@@ -109,8 +110,8 @@ public class Controller implements Initializable{
     public void update(ActionEvent actionEvent) throws SQLException,
             ClassNotFoundException, IOException{//update Director Chat
         //TextAreaDirector.setText(" ");
-        TEXT = server.getTextForServer();
-        TextAreaDirector.setText(TEXT);
+        TextThere = TextThere + server.getTextForServer();//присоединили накомленное на сервере
+        TextAreaDirector.setText(TextThere);//выводим уже ВСЁ
         System.out.println("Вопросы обновлены!");
         //insertingMessageToDB(current);
     }
@@ -119,23 +120,26 @@ public class Controller implements Initializable{
             ClassNotFoundException, IOException{
         String comment = commentDirectorSide.getText();
         commentDirectorSide.setText("");
-        System.out.println("Comment director: "+comment);
+        System.out.println("Записан комментарий: "+comment);
         server.addTextForClient("Sl: "+String.valueOf(imgCol.getCurrent())+", user: "+
         DAOUser.searchUserFromId(lector.getId()).getUsername()+", type: comment, mes: "+comment+"\r\n");
-        TextAreaDirector.appendText("Sl: "+String.valueOf(imgCol.getCurrent())+", user: "+lector.getUsername()
-                +", type: comement, ,mes: "+comment+"\r\n");
+        TextThere += "Sl: "+String.valueOf(imgCol.getCurrent())+", user: "+lector.getUsername()
+                +", type: comement, ,mes: "+comment+"\r\n";//накапливаем у себя
+        TextAreaDirector.setText(TextThere);//выводим
         //DAOMessage.insertMessage(new Message(lector.getId(),String.valueOf(imgCol.getCurrent()),comment,"comment"));
     }
 
     public void OKAnswer(ActionEvent actionEvent) throws InterruptedException, SQLException,
             ClassNotFoundException, IOException{//ответ Director
+        System.out.println("TextThere: "+TextThere+"\r\n");
         String answer = answerSide.getText();
         answerSide.setText("");
-        System.out.println("Ответ director: "+answer);
+        System.out.println("Записан ответ: "+answer);
         server.addTextForClient("Sl: "+String.valueOf(imgCol.getCurrent())+", user: "+
                 DAOUser.searchUserFromId(lector.getId()).getUsername()+", type: answer, mes: "+answer+"\r\n");
-        TextAreaDirector.appendText("Sl: "+String.valueOf(imgCol.getCurrent())+",user: "+lector.getUsername()
-                +", type: answer, mes: "+answer+"\r\n");
+        TextThere += "Sl: "+String.valueOf(imgCol.getCurrent())+",user: "+lector.getUsername()
+                +", type: answer, mes: "+answer+"\r\n";//накапливаем у себя
+        TextAreaDirector.setText(TextThere);//выводим
         //DAOMessage.insertMessage(new Message(lector.getId(),String.valueOf(imgCol.getCurrent()),answer,"answer"));
     }
 

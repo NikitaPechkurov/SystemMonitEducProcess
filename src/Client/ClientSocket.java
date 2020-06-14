@@ -53,8 +53,8 @@ public class ClientSocket extends Thread{
                     } else if (message.getType().equals("getSlide")) {
                         gettingImage();
                     } else if (message.getType().equals("updateClientChat")) {
-                        answers = (String) oin.readObject();
-                        System.out.println("С сервера пришло " + answers.length() + " символов.");
+                        message = (Message) oin.readObject();
+                        System.out.println("С сервера пришло " + message.getMessage().length() + " символов.");
                     }
                     flag = false;//после обработки установили защелку
                 }
@@ -103,7 +103,7 @@ public class ClientSocket extends Thread{
     }
     //
 
-    public void setFlag(boolean flag) {//для установки защелки
+    public synchronized void setFlag(boolean flag) {//для установки защелки
         this.flag = flag;
     }
 

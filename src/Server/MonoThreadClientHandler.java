@@ -64,7 +64,7 @@ public class MonoThreadClientHandler extends Thread {
                     System.out.println("Message с такой картинкой слайда вернули на clientSocket!: " + SwingFXUtils.toFXImage(toClient.getImageVision().getImage(), null).impl_getUrl());
                 } else if (entry_message.getType().equals("updateClientChat")) {
                     String answers = server.getTextForClient();
-                    outputStream.writeObject(answers);
+                    outputStream.writeObject(new Message("1",entry_message.getId_slide(),answers,"answers"));
                     outputStream.flush();
                     System.out.println("Сервер передал строку answers на клиент-сокет!");
                 }

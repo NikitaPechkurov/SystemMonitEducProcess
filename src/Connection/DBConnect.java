@@ -11,6 +11,7 @@ import java.sql.*;
 public class DBConnect {
     private static final String DB_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     private static final String DB_URL = "jdbc:sqlserver://localhost\\SQLEXPRESS:1890;databaseName=Uspevaemost;user=sa;password=12345";
+    //private static final String DB_URL = "jdbc:sqlserver://localhost:1890;"+"databaseName=Uspevaemost;integratedSecurity=true";
     private static final String DB_USER = "sa";
     private static final String DB_PASSWORD = "12345";
     public static final String DBName = "Uspevaemost";

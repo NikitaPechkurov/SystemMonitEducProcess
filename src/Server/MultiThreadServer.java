@@ -73,19 +73,21 @@ public class MultiThreadServer extends Thread {
         return connections.get(n);
     }
 
-    public void addTextForServer(String text){
+    public synchronized void addTextForServer(String text){
         TextForServer += text;
     }
 
-    public String getTextForServer(){
-        return TextForServer;
+    public synchronized String getTextForServer(){
+        String a = TextForServer;
+        TextForServer = "";
+        return a;
     }
 
-    public void addTextForClient(String text){
+    public synchronized void addTextForClient(String text){
         TextForClient += text;
     }
 
-    public String getTextForClient(){
+    public synchronized String getTextForClient(){
         return TextForClient;
     }
 }
