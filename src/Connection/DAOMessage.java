@@ -10,10 +10,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DAOMessage {
-
+    /**
+     * Класс, содержащий методы для работы с данными,
+     * полученными из БД.
+     * @author Nikita Pechkurov
+     * *@version 2.3
+     */
     //поиск сообщения по введённому. Вернет экземпляр
     public static ObservableList<Message> searchMessage (String messageSelect) throws SQLException,
             ClassNotFoundException, IOException {
+        /**
+         * Метод, возвращающий список сообщений из БД, схожих
+         * с введенным сообщением. Возвращает список ObservableList<></>
+         */
         //Declare a SELECT statement
         String selectStmt = "SELECT * FROM " + DBConnect.DBName + " WHERE "+ DBConnect.nameColMessage.MESSAGE +" LIKE '" + messageSelect + "';";//было = вместо like
         //Execute SELECT statement
@@ -38,6 +47,11 @@ public class DAOMessage {
 
     //ищет экземпляр сообщения (для картинок) по типу(image) и номеру слайда
     public static Message searchImageMessage (String id_slide) throws SQLException, ClassNotFoundException, IOException {
+        /**
+         * Данный метод возвращает сообщение типа 'image', которое содержит
+         * ссылку на слайд. В качестве параметров принимает номер слайда.
+         * Возвращает экземпляр сообщения.
+         */
         //Declare a SELECT statement
         String selectStmt = "SELECT * FROM " + DBConnect.nameColTables.MESSAGES + " WHERE "
                 + DBConnect.nameColMessage.TYPE+" = 'image' AND " + DBConnect.nameColMessage.ID_SLIDE + " = '"+ id_slide +"';";
@@ -61,6 +75,10 @@ public class DAOMessage {
 
     //сформировать экземпляр сообщения из вернувшегося ответа от БД
     private static Message getMessageFromResultSet(ResultSet rs) throws SQLException, IOException {
+        /**
+         * Данный метод создает и возвращает экземпляр сообщения из полученных
+         * данных в виде ResultSet. Принимает в качестве параметра экземпляр ResultSet.
+         */
         Message mess = new Message("aaaa", "bbbb", "ll11","cccc");
         mess.setId(rs.getString(DBConnect.nameColMessage.ID));
         mess.setId_user(rs.getString(DBConnect.nameColMessage.ID_USER));
@@ -118,6 +136,11 @@ public class DAOMessage {
 
     //вставка данных в БД на основе экзмепляра message. ID - автоинкрементное поле
     public static void insertMessage(Message message) throws SQLException, ClassNotFoundException {
+        /**
+         * Данный метод предназначен для вставки сообщеня в БД.
+         * В качестве параметра принимает сообщение Message.
+         * Ничего не возвращает.
+         */
         //Declare a DELETE statement
         String updateStmt = "INSERT INTO " + DBConnect.nameColTables.MESSAGES +"("+ DBConnect.nameColMessage.ID_USER+","+
                 DBConnect.nameColMessage.ID_SLIDE+","+DBConnect.nameColMessage.MESSAGE +","

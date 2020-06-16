@@ -19,7 +19,12 @@ import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 public class ClientController implements Initializable {
-
+    /**
+     * Класс, предназначенный для обработки событий главного окна клиента.
+     * Свойства класса - элементы, содержащиеся на форме окна.
+     * @author Nikita Pechkurov
+     * *@version 2.3.3
+     */
     public Button connectButton;
     public ImageView imageViewClient;
     public TextField questionSide;
@@ -39,11 +44,20 @@ public class ClientController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        /**
+         * Вызывается для инициализации контроллера после того,
+         * как его корневой элемент был полностью обработан.
+         */
         student = new User("2","Студент","student","student");//интерпретация студента
         clientSocket = new ClientSocket();
     }
 
     public void connect(ActionEvent actionEvent) throws InterruptedException, IOException{
+        /**
+         * Метод, обрабатывающий события нажатия кнопки "Подключиться".
+         * Посылает запрос на сервер для получения текущего слайда презентации
+         * и устанавлиает слайд в контейнер для картинки слайда.
+         */
         connectButton.setDisable(true);
         clientSocket.setMessage(new Message(student.getId(),"","","getSlide"));
         clientSocket.setFlag(true);
@@ -56,6 +70,11 @@ public class ClientController implements Initializable {
     }
 
     public void onNextImage(ActionEvent actionEvent) {
+        /**
+         * Метод, обрабатывающий события нажатия кнопки ">>" (следующий слайд).
+         * Посылает запрос на сервер для получения следующего слайда презентации
+         * и устанавлиает слайд в контейнер для картинки слайда.
+         */
         try {
             clientSocket.setMessage(new Message(student.getId(),"","","getSlide"));
             clientSocket.setFlag(true);
@@ -71,6 +90,11 @@ public class ClientController implements Initializable {
     }
 
     public void OKCommentClient(ActionEvent actionEvent) throws InterruptedException, IOException{
+        /**
+         * Метод, обрабатывающий события нажатия кнопки отправления комментария.
+         * Отправляет сообщение с комментарием на сервер и устанавливает
+         * введенное сообщение в чат клиента для наглядности.
+         */
         String comment = commentSide.getText();
         commentSide.setText("");
         System.out.println("Comment client: "+comment);
@@ -81,6 +105,11 @@ public class ClientController implements Initializable {
     }
 
     public void OKQuestion(ActionEvent actionEvent) throws InterruptedException, IOException{
+        /**
+         * Метод, обрабатывающий события нажатия кнопки отправления вопроса.
+         * Отправляет сообщение с вопросом на сервер и устанавливает
+         * введенное сообщение в чат клиента для наглядности.
+         */
         String question = questionSide.getText();
         questionSide.setText("");
         System.out.println("Вопрос client: "+question);
@@ -90,18 +119,30 @@ public class ClientController implements Initializable {
     }
 
     public void updateClientChat(ActionEvent actionEvent) throws InterruptedException, IOException{
+        /**
+         * Метод, обрабатывающий события нажатия кнопки "Обновить" на форме клиента.
+         * Отсылает сообщение на сервер с просьбой прислать последние данные
+         * с ответами преподавателя. Устанавливает полученные данные в окно чата.
+         */
         //TextAreaClient.setText(" ");
         clientSocket.setMessage(new Message(student.getId(),current.getId_slide(),"","updateClientChat"));
         clientSocket.setFlag(true);
         Thread.sleep(1000);
         //для оптимизации:
-        TextThereClient = TextThereClient + clientSocket.getMessage().getMessage();//заново создаем полный текст чата
-        TextAreaClient.setText(TextThereClient);
-        System.out.println("Ответы обновлены!");
+        if (clientSocket.getMessage().getMessage()!=null) {
+            TextThereClient = TextThereClient + clientSocket.getMessage().getMessage();//заново создаем полный текст чата
+            TextAreaClient.setText(TextThereClient);
+            System.out.println("Ответы обновлены!");
+        } else TextAreaClient.setText("Преподаватель завершил презентацию!");
     }
 
     //***ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ***
     private void sendRecord(String username, String nn, String mes, String type) throws InterruptedException, IOException{
+        /**
+         * Метод для отправки сообщения на сервер. Сообщение
+         * формируется из строк, переданных методу
+         * в качестве параметров.
+         */
         clientSocket.setMessage(new Message(username,nn,mes,type));
         clientSocket.setFlag(true);
         Thread.sleep(10);

@@ -10,7 +10,12 @@ import java.net.Socket;
 import java.sql.SQLException;
 
 public class MonoThreadClientHandler extends Thread {
-
+    /**
+     * Класс, обрабатывающий обращение клиента.
+     * Производит выдачу сообщений, запись сообщений на сервер.
+     * @author Nikita Pechkurov
+     * *@version 2.3.3
+     */
     private static Socket clientDialog;//клиент
     DataOutputStream out;
     DataInputStream in;
@@ -19,13 +24,20 @@ public class MonoThreadClientHandler extends Thread {
     MultiThreadServer server;
 
     public MonoThreadClientHandler(Socket client, MultiThreadServer server) {
+        /**
+         * Конструктор класса с параметрами. Принимает сокет с главного сервера
+         * и экземпляр самого сервера для последующего обращения
+         * к нему.
+         */
         clientDialog = client;
         this.server = server;
     }
 
     @Override
     public void run() {
-
+        /**
+         * Главный метод выполнения в потоке. Начинает выполнение при вызове метода start() у экземпляра.
+         */
         try {
             // инициируем каналы общения в сокете, для сервера
             // канал записи в сокет следует инициализировать сначала канал чтения для избежания блокировки выполнения программы на ожидании заголовка в сокете
@@ -92,9 +104,7 @@ public class MonoThreadClientHandler extends Thread {
             System.out.println("ClassNotF: " + ec);
         } catch (SQLException e) {
             System.out.println("SQLException: " + e);
-        } //catch (InterruptedException iex) {
-            //System.out.println("Interrupted : "+iex);
-        //}
+        }
     }
 
 }

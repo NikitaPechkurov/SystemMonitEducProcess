@@ -9,9 +9,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DAOUser {
-
+    /**
+     * Класс, содержащий методы для работы с данными,
+     * полученными из БД.
+     * @author Nikita Pechkurov
+     * *@version 2
+     */
     //поиск пользователя по введённому username. Вернет экземпляры user
     public static ObservableList<User> searchUser (String usernameSelect) throws SQLException, ClassNotFoundException {
+        /**
+         * Метод, возвращающий список пользователей, имя которых
+         * совпадает с полученным в качестве параметра именем пользователя.
+         */
         //Declare a SELECT statement
         String selectStmt = "SELECT * FROM " + DBConnect.nameColTables.USERS + " WHERE "+ DBConnect.nameColUser.USERNAME +" LIKE '" + usernameSelect + "';";//было = вместо like
         //Execute SELECT statement
@@ -37,6 +46,10 @@ public class DAOUser {
 
     //поиск пользователя по id_user из message
     public static User searchUserFromId (String id_user) throws SQLException, ClassNotFoundException {
+        /**
+         * Данный метод возвращает экземпляр класса User, созданный из данных,
+         * полученных из БД на основе id пользователя.
+         */
         //Declare a SELECT statement
         String selectStmt = "SELECT * FROM " + DBConnect.nameColTables.USERS + " WHERE "+ DBConnect.nameColUser.ID +" = " + id_user + ";";//было = вместо like
         //Execute SELECT statement
@@ -61,6 +74,10 @@ public class DAOUser {
 
     //сформировать экземпляр сообщения из вернувшегося ответа от БД
     private static User getUserFromResultSet(ResultSet rs) throws SQLException {
+        /**
+         * Данный метод создает и возвращает экземпляр пользователя из полученных
+         * данных в виде ResultSet. Принимает в качестве параметра экземпляр ResultSet.
+         */
         User us = new User("aaaa", "bbbb", "ll1","cccc");
         us.setId(rs.getString(DBConnect.nameColUser.ID));
         us.setUsername(rs.getString(DBConnect.nameColUser.USERNAME));
@@ -132,6 +149,10 @@ public class DAOUser {
 
     //вставка данных в БД на основе экзмепляра user. ID - автоинкрементное поле
     public static void insertUser(User user) throws SQLException, ClassNotFoundException {
+        /**
+         * Данный метод предназначен для добавления пользователя в БД.
+         * Принимает в качестве параметра экземпляр класса User.
+         */
         //Declare a DELETE statement
         String updateStmt = "INSERT INTO " + DBConnect.DBName + DBConnect.nameColUser.USERNAME+", "+
                 DBConnect.nameColUser.PASSWORD+", "+DBConnect.nameColUser.POST + " VALUES (" + user.record() + ");";

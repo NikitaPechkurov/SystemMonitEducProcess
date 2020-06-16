@@ -7,19 +7,19 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="469.0" prefWidth="688.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.ClientController">
+<AnchorPane prefHeight="444.0" prefWidth="671.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.ClientController">
    <children>
-      <ImageView fx:id="imageViewClient" fitHeight="300.0" fitWidth="380.0" layoutX="24.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true" />
-      <Label layoutX="474.0" layoutY="20.0" text="Возникшие вопросы к слайду" />
-      <TextArea fx:id="TextAreaClient" editable="false" layoutX="422.0" layoutY="50.0" prefHeight="300.0" prefWidth="242.0" />
-      <TextField fx:id="questionSide" layoutX="422.0" layoutY="359.0" prefHeight="25.0" prefWidth="242.0" />
-      <Label layoutX="324.0" layoutY="354.0" prefHeight="35.0" prefWidth="77.0" text="Задать вопрос" />
-      <Label layoutX="120.0" layoutY="420.0" prefHeight="17.0" prefWidth="103.0" text="Оставить комментарий" />
-      <TextField fx:id="commentSide" layoutX="237.0" layoutY="420.0" prefHeight="25.0" prefWidth="205.0" />
-      <Button fx:id="connectButton" layoutX="50.0" layoutY="359.0" mnemonicParsing="false" onAction="#connect" prefHeight="25.0" prefWidth="164.0" text="Подключиться" />
-      <Button fx:id="OKCommentButt" layoutX="487.0" layoutY="419.0" mnemonicParsing="false" onAction="#OKCommentClient" prefHeight="25.0" prefWidth="56.0" text="OK" />
-      <Button fx:id="OKQuestion" layoutX="612.0" layoutY="384.0" mnemonicParsing="false" onAction="#OKQuestion" text="Send" />
-      <Button fx:id="nextButton" layoutX="237.0" layoutY="359.0" mnemonicParsing="false" onAction="#onNextImage" text="&gt;&gt;" />
-      <Button fx:id="updateClientChatButt" layoutX="535.0" layoutY="386.0" mnemonicParsing="false" onAction="#updateClientChat" text="Обновить" />
+      <TextField fx:id="commentSide" layoutX="200.0" layoutY="400.0" prefHeight="25.0" prefWidth="205.0" />
+      <Label layoutX="85.0" layoutY="400.0" prefHeight="17.0" prefWidth="103.0" text="Оставить комментарий" />
+      <Label layoutX="320.0" layoutY="345.0" prefHeight="35.0" prefWidth="77.0" text="Задать вопрос" />
+      <TextField fx:id="questionSide" layoutX="400.0" layoutY="350.0" prefHeight="25.0" prefWidth="242.0" />
+      <Button fx:id="connectButton" layoutX="60.0" layoutY="340.0" mnemonicParsing="false" onAction="#connect" prefHeight="25.0" prefWidth="164.0" text="Подключиться" />
+      <Button fx:id="OKCommentButt" layoutX="425.0" layoutY="398.0" mnemonicParsing="false" onAction="#OKCommentClient" prefHeight="25.0" prefWidth="56.0" text="OK" />
+      <Button fx:id="OKQuestion" layoutX="580.0" layoutY="380.0" mnemonicParsing="false" onAction="#OKQuestion" text="Send" />
+      <Button fx:id="nextButton" layoutX="250.0" layoutY="340.0" mnemonicParsing="false" onAction="#onNextImage" text="&gt;&gt;" />
+      <Button fx:id="updateClientChatButt" layoutX="500.0" layoutY="380.0" mnemonicParsing="false" onAction="#updateClientChat" text="Обновить" />
+      <ImageView fx:id="imageViewClient" fitHeight="307.0" fitWidth="363.0" layoutX="20.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true" />
+      <Label layoutX="440.0" layoutY="15.0" text="Возникшие вопросы к слайду" />
+      <TextArea fx:id="TextAreaClient" editable="false" layoutX="400.0" layoutY="40.0" prefHeight="300.0" prefWidth="242.0" />
    </children>
 </AnchorPane>

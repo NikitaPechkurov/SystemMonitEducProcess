@@ -18,7 +18,12 @@ import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable{
-
+    /**
+     * Класс, предназначенный для обработки событий главного окна сервера.
+     * Свойства класса - элементы, содержащиеся на форме окна.
+     * @author Nikita Pechkurov
+     * *@version 2.3.3
+     */
     public TextArea TextAreaDirector;
     public Button endPresentButt;
     public Button sldLeftButt;
@@ -43,6 +48,10 @@ public class Controller implements Initializable{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        /**
+         * Вызывается для инициализации контроллера после того,
+         * как его корневой элемент был полностью обработан.
+         */
         try {
             lector = DAOUser.searchUser("Василий Петрович").get(0);
             server = new MultiThreadServer();
@@ -57,6 +66,11 @@ public class Controller implements Initializable{
     }
 
     public void begin(ActionEvent actionEvent) throws SQLException, ClassNotFoundException{
+        /**
+         * Метод обработки события нажатия кнопки "Начать презентацию".
+         * Устанавливает первый слайд в контейнер для картинки слайда,
+         * запускает сервер.
+         */
         try {
             //инициализация итератора
             iterator = imgCol.getIterator();
@@ -78,6 +92,10 @@ public class Controller implements Initializable{
     }
 
     public void slideLeft(ActionEvent actionEvent) {
+        /**
+         * Метод обработки события нажатия кнопки "Слайд влево".
+         * Устанавливает предыдущий слайд в окно для кратинки слайда.
+         */
         try {
             ImageVision image = (ImageVision) iterator.preview();
             imageViewDirector.setImage(SwingFXUtils.toFXImage(image.getImage(),null));
@@ -91,6 +109,10 @@ public class Controller implements Initializable{
     }
 
     public void slideRight(ActionEvent actionEvent) {
+        /**
+         * Метод обработки события нажатия кнопки "Слайд право".
+         * Устанавливает следующий слайд в окно для кратинки слайда.
+         */
         try {
             if (iterator.hasNext()){
                 ImageVision image = (ImageVision) iterator.next();
@@ -99,6 +121,8 @@ public class Controller implements Initializable{
                 current.setImageVision(image);
                 server.setMessage(current);
                 System.out.println("Картинка установлена в imageViewDirector!");
+                TextThere = "";
+                TextAreaDirector.setText(TextThere);
             }
             else System.out.println("Следующей картинки не существует!");
             System.out.println("Картинка установлена в imageViewDirector и передана на сервер, слайд: "+imgCol.getCurrent());
@@ -108,7 +132,11 @@ public class Controller implements Initializable{
     }
 
     public void update(ActionEvent actionEvent) throws SQLException,
-            ClassNotFoundException, IOException{//update Director Chat
+            ClassNotFoundException, IOException{
+        /**
+         * Метод обработки нажатия кнопки "Обновить".
+         * Добавляет текст с сервера в чат.
+         */
         //TextAreaDirector.setText(" ");
         TextThere = TextThere + server.getTextForServer();//присоединили накомленное на сервере
         TextAreaDirector.setText(TextThere);//выводим уже ВСЁ
@@ -118,6 +146,11 @@ public class Controller implements Initializable{
 
     public void OKCommentDirect(ActionEvent actionEvent) throws InterruptedException, SQLException,
             ClassNotFoundException, IOException{
+        /**
+         * Метод обработки нажатия кнопки отправки комментария на сервер.
+         * Также данный метод накапливает данные во внутренюю переменную
+         * для удобного отображения данных в чате преподавателя.
+         */
         String comment = commentDirectorSide.getText();
         commentDirectorSide.setText("");
         System.out.println("Записан комментарий: "+comment);
@@ -130,7 +163,12 @@ public class Controller implements Initializable{
     }
 
     public void OKAnswer(ActionEvent actionEvent) throws InterruptedException, SQLException,
-            ClassNotFoundException, IOException{//ответ Director
+            ClassNotFoundException, IOException{
+        /**
+         * Метод обработки нажатия кнопки отправки ответа на сервер.
+         * Также данный метод накапливает данные во внутренюю переменную
+         * для удобного отображения данных в чате преподавателя.
+         */
         System.out.println("TextThere: "+TextThere+"\r\n");
         String answer = answerSide.getText();
         answerSide.setText("");
@@ -144,14 +182,24 @@ public class Controller implements Initializable{
     }
 
     public void endPresent(ActionEvent actionEvent) throws SQLException, ClassNotFoundException{
+        /**
+         * Метод завершения презентации. Останавливает сервер.
+         */
         if (server.isAlive()){
             server.interrupt();
+            server.nullTextForClient();
         }
         else System.out.println("Сервер уже закрыт!");
     }
 
     //***вспомогательные функции
     private void insertingMessageToDB(Message entry) throws IOException, SQLException, ClassNotFoundException{
+        /**
+         * Метод вставки данных в базу данных.
+         * В качестве аргумента принимает сообщение для вставки.
+         * Необходим для повторного использования с выведением сообщения
+         * успешного добавления данных.
+         */
         //*******ДОБАВКА СООБЩЕНИЯ В БД
         DAOMessage.insertMessage(entry);
         System.out.println("ServerController записал сообщение в БД!"+entry);

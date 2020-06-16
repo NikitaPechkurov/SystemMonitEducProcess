@@ -9,6 +9,10 @@ import java.io.IOException;
 import java.sql.*;
 
 public class DBConnect {
+    /**
+     * Класс для установления соединения между проектом и базой данных
+     * Свойства класса - параметры подключения к БД.
+     */
     private static final String DB_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     private static final String DB_URL = "jdbc:sqlserver://localhost\\SQLEXPRESS:1890;databaseName=Uspevaemost;user=sa;password=12345";
     //private static final String DB_URL = "jdbc:sqlserver://localhost:1890;"+"databaseName=Uspevaemost;integratedSecurity=true";
@@ -39,6 +43,10 @@ public class DBConnect {
 
     //создание соединения
     private static Connection getDBConnection() {
+        /**
+         * Метод, осуществляющий подключение к БД
+         * Выдает ошибку, если подключение невозможно.
+         */
         Connection dbConnection = null;
         try {
             Class.forName(DB_DRIVER);
@@ -61,6 +69,10 @@ public class DBConnect {
 
     //простой запрос к БД.  Вернет cachedResultSet
     public static ResultSet dbExecuteQuery(String queryStmt) throws SQLException, ClassNotFoundException {
+        /**
+         * Метод, предназначенный для выполнения SQL-запроса к базе данных
+         * Возвращает кэшированные данные в виде объекта ResultSer.
+         */
         //Declare statement, resultSet and CachedResultSet as null
         Connection dbConnection = null;
         Statement statement = null;
@@ -101,6 +113,10 @@ public class DBConnect {
 
     //обновление БД. Ничего не вернет
     public static void dbExecuteUpdate(String sqlStmt) throws SQLException, ClassNotFoundException {
+        /**
+         * Метод для выполнения запросов на обновление базы данных.
+         * Ничего не возвращает.
+         */
         //Declare statement as null
         Connection dbConnection = null;
         Statement statement = null;

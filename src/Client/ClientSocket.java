@@ -7,7 +7,11 @@ import java.io.*;
 import java.net.Socket;
 
 public class ClientSocket extends Thread{
-
+    /**
+     * Класс, служащий обработчиком соединения со стороны клиента.
+     * @author Nikita Pechkurov
+     * *@version 2.3.3
+     */
     private static Socket socket;
     private DataOutputStream oos;
     private DataInputStream ois;
@@ -18,6 +22,10 @@ public class ClientSocket extends Thread{
     private boolean flag = false;//защелка для общения с сервером
 
     public ClientSocket() {
+        /**
+         * Конструктор класса по умолчанию. Создает новый сокет на порту 3214,
+         * инициирует сообщение по умолчанию для запроса первого слайда.
+         */
         try {
             // создаём сокет общения на стороне клиента
             socket = new Socket("localhost", 3214);
@@ -31,6 +39,9 @@ public class ClientSocket extends Thread{
 
     @Override
     public void run() {
+        /**
+         * Главный метод выполнения в потоке. Начинает выполнение при вызове метода start() у экземпляра.
+         */
         try  // создаём объект для записи сообщений в созданный скокет, для
         // чтения сообщений из сокета
         {
@@ -76,11 +87,19 @@ public class ClientSocket extends Thread{
 
     //***ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ***
     private void listening() throws IOException{
+        /**
+         * Метод презназначен для прослушивания канала и получения ответа
+         * в текстовом формате. Применяется после отправки данных на сервер.
+         */
         String in = ois.readUTF();
         System.out.println("Сервер ответил по поводу загрузки вопроса/ответа/комментария/обновления номера слайда: " + in);
     }
 
     private void gettingImage() throws IOException,ClassNotFoundException,InterruptedException{
+        /**
+         * Метод презназначен для получения сообщения и распаковки
+         * содержащегося в сообщении слайда.
+         */
         message = (Message) oin.readObject();
         System.out.println("Текст полученного Message: "+message.getMessage());
         System.out.println("Картинка сформирована!");
@@ -88,22 +107,28 @@ public class ClientSocket extends Thread{
     }
     //***
 
-
     //геттеры для возвращения полезных данных
     public synchronized void setMessage(Message mes){
+        /**
+         * Метод для устновки сообщения на клиент-сокет
+         */
         this.message = mes;
     }
 
     public synchronized Message getMessage(){
+        /**
+         * Метод возвращает сообщение, полученное с сервера
+         */
         return message;
-    }
-
-    public String getAnswers(){
-        return answers;
     }
     //
 
     public synchronized void setFlag(boolean flag) {//для установки защелки
+        /**
+         * Метод, используемый для установки блокировки исполнения
+         * потока отправки сообщений на сервер.
+         * Принимает логическую переменную в качестве параметра.
+         */
         this.flag = flag;
     }
 
